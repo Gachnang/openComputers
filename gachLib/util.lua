@@ -23,24 +23,24 @@ function util.deepcopy(orig, copies)
     return copy
 end
 
-function util.tableCount(table)
+function util.tableCount(t)
   local i = 0
-  for _,_ in pairs(table) do
+  for _,_ in pairs(t) do
     i = i + 1
   end
   return i
 end
 
-function util.tableKeys(table)
+function util.tableKeys(t)
   local keys = {}
-  for key,_ in pairs(table) do
+  for key,_ in pairs(t) do
     keys[#keys + 1] = key
   end
   
   return keys
 end
 
-function util.tableValues(table)
+function util.tableValues(t)
   local values = {}
   for _,value in pairs(table) do
     values[#values + 1] = value

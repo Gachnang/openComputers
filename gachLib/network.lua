@@ -78,7 +78,7 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
       modem.send(
         message.source.address, 
         private.port, 
-        private.createPackage("gsa", message.source.name, message.source.address, state.getState())
+        private.createPackage("gsa", message.source.name, message.source.address, state.getState()))
     elseif message.code == "gsa" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
     -- getState answer
       gLn.event.onGetStateAnswer({source = message.source, state = message.data}) 
@@ -88,7 +88,7 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
       modem.send(
         message.source.address, 
         private.port, 
-        private.createPackage("gsa", message.source.name, message.source.address, state.getState())
+        private.createPackage("gsa", message.source.name, message.source.address, state.getState()))
     elseif message.code == "sus" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
     -- state unsubscibe
       private.stateSubsciber[message.source.name] = nil
