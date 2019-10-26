@@ -13,7 +13,7 @@ local gLn = {
     onGetStateAnswer = eventHandler(),
   },
   directory = {
-    -- name = address
+    -- [name] = address
   },
   --DEBUG
   debug = {}
@@ -29,7 +29,6 @@ local private = {
   stateTimer = nil,
   stateSubscription = nil,
   stateChanged = false,
-  staeSendTime = 0,
   stateSubsciber = {}
 }
 
@@ -73,7 +72,7 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
   if messageCheck > 0 then
     if gLn.directory[message.source.name] == nil or gLn.directory[message.source.name] ~= message.source.address then
       gLn.directory[message.source.name] = message.source.address
-      gLn.event.onDirectoryAdded(message.source)
+      gLn.event.onDirectoryAdded:trigger(message.source)
     end
     
     if message.code == "di" then 
@@ -85,7 +84,7 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
     elseif message.code == "rm" then
     -- computer stoped
       gLn.directory[message.source.name] = nil
-      gLn.event.onDirectoryRemoved(message.source)
+      gLn.event.onDirectoryRemoved:trigger(message.source)
     end
     
     if messageCheck > 1 then
@@ -97,7 +96,7 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
           private.createPackage("pong", message.source.name, message.source.address))
       elseif message.code == "pong" then
       -- pong
-        gLn.event.onPong(message.source)      
+        gLn.event.onPong:trigger(message.source)      
       elseif message.code == "gs" then
       -- getState
         modem.send(
@@ -106,7 +105,7 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
           private.createPackage("gsa", message.source.name, message.source.address, state.getState()))
       elseif message.code == "gsa" then
       -- getState answer
-        gLn.event.onGetStateAnswer({source = message.source, state = message.data}) 
+        gLn.event.onGetStateAnswer:trigger({source = message.source, state = message.data}) 
       elseif message.code == "ss" then
       -- state subscibe
         private.stateSubsciber[message.source.name] = true
@@ -124,13 +123,14 @@ end
 
 function private.onStateTimer()
   if private.stateChanged then
-    for name,_ in pairs(private.stateSubsciber) do
-      local desAddress = gLn.nameToAddress(name)
+    for desName,_ in pairs(private.stateSubsciber) do
+      local desAddress = gLn.nameToAddress(desName)
       modem.send(
         desAddress, 
         private.port, 
-        private.createPackage("gsa", name, desAddress, state.getState()))
+        private.createPackage("gsa", desName, desAddress, state.getState()))
     end
+    private.stateChanged = false
   end
 end
 
@@ -275,8 +275,7 @@ function gLn.destroy()
       state.unsubscribe(private.stateSubscription)
     end
     
-    private.computername = nil
-    
+    private.computername = nil    
   end
 end
 
