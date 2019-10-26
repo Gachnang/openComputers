@@ -1,3 +1,3 @@
 return {
-  eventHandler = require("gachlib.type.eventHandler")
+  eventHandler = require("gachLib.type.eventHandler")
 }
