@@ -106,7 +106,7 @@ function private.onStateTimer()
     modem.send(
         desAddress, 
         private.port, 
-        private.createPackage("gsa", name, desAddress, state.getState())
+        private.createPackage("gsa", name, desAddress, state.getState()))
   end
 end
 
