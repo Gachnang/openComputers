@@ -75,7 +75,7 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
     if message.code == "di" then 
     -- discovery
       modem.send(
-        message.address, 
+        message.source.address, 
         private.port, 
         private.createPackage("dia", message.source.name, message.source.address))
     elseif message.code == "rm" then
