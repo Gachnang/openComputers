@@ -17,7 +17,7 @@ local files = {
     { url = urlBase .. "gachLib/state.lua", path = "./gachLib/state.lua"},
     { url = urlBase .. "gachLib/transposer.lua", path = "./gachLib/transposer.lua"},
     { url = urlBase .. "gachLib/util.lua", path = "./gachLib/util.lua"},
-    { url = urlBase .. "gachLib/type/init.lua", path = "./gachLib/type/init.lua"}
+    { url = urlBase .. "gachLib/type/init.lua", path = "./gachLib/type/init.lua"},
     { url = urlBase .. "gachLib/type/eventHandler.lua", path = "./gachLib/type/eventHandler.lua"}
   ,--},
   --woot = {
