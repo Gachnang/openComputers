@@ -100,7 +100,7 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
   end 
 end
 
-function private.onStateTimer = function()
+function private.onStateTimer()
   for name,_ in pairs(private.stateSubsciber) do
     local desAddress = gLn.nameToAddress(name)
     modem.send(
