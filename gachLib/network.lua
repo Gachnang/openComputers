@@ -2,7 +2,7 @@ local component = require("component")
 local modem = component.modem
 local event = require("event")
 local serialization = require("serialization")
-local eventHandler = require("gachLib.eventHandler")
+local eventHandler = require("gachlib.type.eventHandler")
 local state = require("gachLib.state")
 
 local gLn = {
