@@ -167,7 +167,7 @@ function gLn.init(name, port)
     end  
     private.port = port
     
-    modem.listen(gLn.port)
+    modem.open(gLn.port)
     modem.setWakeMessage("WakeUp_" .. private.computername)
     private.eventListener = event.register("modem_message", private.onMessage, math.huge)
     private.stateTimer = event.timer(5, private.onStateTimer, math.huge)
@@ -194,4 +194,4 @@ function gLn.destroy()
   end
 end
 
-return require("gachLib.doc")(gLn, doc)
+return gLn, doc
