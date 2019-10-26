@@ -50,55 +50,71 @@ function private.createPackage(code, targetName, targetAddress, data)
   return packet
 end
 
+function private.messageCheck(message)
+  local ret = 0
+  if message ~= nil and message.source ~= nil and message.target ~= nil then
+    ret = 1
+    if message.target.name == "BROADCAST" or message.target.name == private.computername or message.target.address == modem.address then
+      ret = 2
+    end
+  end
+  return ret
+end
+
 function private.onMessage(eventName, receiverAddress, senderAddress, port, distance, message)
   message = serialization.unserialize(message)
   gLn.debug[#gLn.debug + 1] = message
+  local messageCheck = private.messageCheck(message)
   
-  if message.source ~= nil then
+  if messageCheck > 0 then
     if gLn.directory[message.source.name] == nil or gLn.directory[message.source.name] ~= message.source.address then
       gLn.directory[message.source.name] = message.source.address
       gLn.event.onDirectoryAdded(message.source)
     end
     
-    if message.code == "di" and message.target ~= nil and message.target == "BROADCAST" then 
+    if message.code == "di" then 
     -- discovery
       modem.send(
         message.address, 
         private.port, 
         private.createPackage("dia", message.source.name, message.source.address))
-    elseif message.code == "ping" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
-    -- ping
-      modem.send(
-        message.source.address, 
-        private.port, 
-        private.createPackage("pong", message.source.name, message.source.address))
-    elseif message.code == "pong" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
-    -- pong
-      gLn.event.onPong(message.source)      
-    elseif message.code == "gs" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
-    -- getState
-      modem.send(
-        message.source.address, 
-        private.port, 
-        private.createPackage("gsa", message.source.name, message.source.address, state.getState()))
-    elseif message.code == "gsa" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
-    -- getState answer
-      gLn.event.onGetStateAnswer({source = message.source, state = message.data}) 
-    elseif message.code == "ss" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
-    -- state subscibe
-      private.stateSubsciber[message.source.name] = true
-      modem.send(
-        message.source.address, 
-        private.port, 
-        private.createPackage("gsa", message.source.name, message.source.address, state.getState()))
-    elseif message.code == "sus" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
-    -- state unsubscibe
-      private.stateSubsciber[message.source.name] = nil
     elseif message.code == "rm" then
     -- computer stoped
       gLn.directory[message.source.name] = nil
       gLn.event.onDirectoryRemoved(message.source)
-    end 
+    end
+    
+    if messageCheck > 1 then
+      if message.code == "ping" then
+      -- ping
+        modem.send(
+          message.source.address, 
+          private.port, 
+          private.createPackage("pong", message.source.name, message.source.address))
+      elseif message.code == "pong" then
+      -- pong
+        gLn.event.onPong(message.source)      
+      elseif message.code == "gs" then
+      -- getState
+        modem.send(
+          message.source.address, 
+          private.port, 
+          private.createPackage("gsa", message.source.name, message.source.address, state.getState()))
+      elseif message.code == "gsa" then
+      -- getState answer
+        gLn.event.onGetStateAnswer({source = message.source, state = message.data}) 
+      elseif message.code == "ss" then
+      -- state subscibe
+        private.stateSubsciber[message.source.name] = true
+        modem.send(
+          message.source.address, 
+          private.port, 
+          private.createPackage("gsa", message.source.name, message.source.address, state.getState()))
+      elseif message.code == "sus" then
+      -- state unsubscibe
+        private.stateSubsciber[message.source.name] = nil
+      end
+    end
   end 
 end
 
@@ -137,6 +153,22 @@ function gLn.discover()
     }))
   end
   return false
+end
+
+doc.subscibeState = "function(name:string):boolean -- Subscribes the state of a computer with given name. Gets state on 'event.onGetStateAnswer'."
+function gLn.subscibeState(name)
+  return modem.send(
+    gLn.directory[name], 
+    private.port, 
+    private.createPackage("ss", name, gLn.directory[name], state.getState()))
+end
+
+doc.unsubscibeState = "function(name:string):boolean -- Unsubscribes the state of a computer with given name."
+function gLn.unsubscibeState(name)
+  return modem.send(
+    gLn.directory[name], 
+    private.port, 
+    private.createPackage("sus", name, gLn.directory[name], state.getState()))
 end
 
 doc.nameToAddress = "function(name:string):string -- Gets the address of a computer with given name."
