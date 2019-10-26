@@ -175,7 +175,7 @@ function gLn.getState(name, callback)
   modem.send(
     gLn.directory[name], 
     private.port, 
-    private.createPackage("gs", name, gLn.directory[name], state.getState()))
+    private.createPackage("gs", name, gLn.directory[name]))
 end
 
 doc.subscribeState = "function(name:string[, func:function]):boolean -- Subscribes the state of a computer with given name. Gets state on 'event.onGetStateAnswer' or pass it as parameter func."
@@ -236,7 +236,7 @@ function gLn.init(name, port)
     
     modem.open(private.port)
     modem.setWakeMessage("WakeUp_" .. private.computername)
-    private.eventListener = event.register("modem_message", private.onMessage, math.huge)
+    private.eventListener = event.listen("modem_message", private.onMessage)
     private.stateTimer = event.timer(5, private.onStateTimer, math.huge)
     private.stateSubscription = state.subscribe(function(new, old)
       private.stateChanged = true
