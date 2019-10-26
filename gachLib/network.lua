@@ -14,7 +14,8 @@ local gLn = {
   },
   directory = {
     -- name = address
-  }
+  },
+  debug = {}
 }
 local doc = {
   directory = "-- Table of name and address of computers in network."
@@ -51,6 +52,7 @@ end
 
 function private.onMessage(eventName, receiverAddress, senderAddress, port, distance, message)
   message = serialization.unserialize(message)
+  gLn.debug[#gLn.debug + 1] = message
   
   if message.source ~= nil then
     if gLn.directory[message.source.name] == nil or gLn.directory[message.source.name] ~= message.source.address then
@@ -170,6 +172,8 @@ function gLn.init(name, port)
     modem.setWakeMessage("WakeUp_" .. private.computername)
     private.eventListener = event.register("modem_message", private.onMessage, math.huge)
     private.stateTimer = event.timer(5, private.onStateTimer, math.huge)
+    
+    gLn.discover()
   end
 end
 
@@ -177,7 +181,16 @@ doc.getName = "function():void -- Destroys the gachLib.network like before 'init
 function gLn.destroy()
   if gLn.isInit() then
     if modem.isOpen(private.port) then
-      modem.broadcast(private.port, "rm" .. private.computername)
+      modem.broadcast(private.port, serialization.serialize({
+        code = "rm",
+        source = {
+          name = private.computername,
+          address = modem.address
+        },
+        target = {
+          name = "BROADCAST"
+        }
+      }))
       modem.close(private.port)
     end
     
@@ -190,6 +203,7 @@ function gLn.destroy()
     end
     
     private.computername = nil
+    
   end
 end
 
