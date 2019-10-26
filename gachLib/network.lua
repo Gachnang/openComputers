@@ -27,12 +27,14 @@ local private = {
   computername = nil,
   eventListener = nil,
   stateTimer = nil,
+  stateSubscription = nil,
+  stateChanged = false,
   staeSendTime = 0,
   stateSubsciber = {}
 }
 
 function private.createPackage(code, targetName, targetAddress, data)
-  local packet = serialization.serialize({
+  local packet = {
       code = code,
       source = {
         name = private.computername,
@@ -42,13 +44,13 @@ function private.createPackage(code, targetName, targetAddress, data)
         name = targetName,
         address = targetAddress
       }
-    })
+    }
   
   if data ~= nil and type(data) ~= "function" then
     packet.data = data
   end
   
-  return packet
+  return serialization.serialize(packet)
 end
 
 function private.messageCheck(message)
@@ -65,8 +67,8 @@ end
 function private.onMessage(eventName, receiverAddress, senderAddress, port, distance, message)
   message = serialization.unserialize(message)
   -- DEBUG
-  gLn.debug[#gLn.debug + 1] = message
   local messageCheck = private.messageCheck(message)
+  gLn.debug[#gLn.debug + 1] = {messageCheck, message}
   
   if messageCheck > 0 then
     if gLn.directory[message.source.name] == nil or gLn.directory[message.source.name] ~= message.source.address then
@@ -108,10 +110,6 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
       elseif message.code == "ss" then
       -- state subscibe
         private.stateSubsciber[message.source.name] = true
-        modem.send(
-          message.source.address, 
-          private.port, 
-          private.createPackage("gsa", message.source.name, message.source.address, state.getState()))
       elseif message.code == "sus" then
       -- state unsubscibe
         private.stateSubsciber[message.source.name] = nil
@@ -125,12 +123,14 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
 end
 
 function private.onStateTimer()
-  for name,_ in pairs(private.stateSubsciber) do
-    local desAddress = gLn.nameToAddress(name)
-    modem.send(
+  if private.stateChanged then
+    for name,_ in pairs(private.stateSubsciber) do
+      local desAddress = gLn.nameToAddress(name)
+      modem.send(
         desAddress, 
         private.port, 
         private.createPackage("gsa", name, desAddress, state.getState()))
+    end
   end
 end
 
@@ -178,13 +178,22 @@ function gLn.getState(name, callback)
     private.createPackage("gs", name, gLn.directory[name], state.getState()))
 end
 
-doc.subscibeState = "function(name:string):boolean -- Subscribes the state of a computer with given name. Gets state on 'event.onGetStateAnswer'."
-function gLn.subscibeState(name)
+doc.subscibeState = "function(name:string[, func:function]):boolean -- Subscribes the state of a computer with given name. Gets state on 'event.onGetStateAnswer' or pass it as parameter func."
+function gLn.subscibeState(name, func)
   checkArg(1, name, "string")
+  
+  if func ~= nil and type(func) == "function" then
+    gLn.event.onGetStateAnswer:add(function(message) 
+      if message.source.name == name then
+        func(message)
+      end
+    end)
+  end
+  
   return modem.send(
     gLn.directory[name], 
     private.port, 
-    private.createPackage("ss", name, gLn.directory[name], state.getState()))
+    private.createPackage("ss", name, gLn.directory[name]))
 end
 
 doc.unsubscibeState = "function(name:string):boolean -- Unsubscribes the state of a computer with given name."
@@ -193,7 +202,7 @@ function gLn.unsubscibeState(name)
   return modem.send(
     gLn.directory[name], 
     private.port, 
-    private.createPackage("sus", name, gLn.directory[name], state.getState()))
+    private.createPackage("sus", name, gLn.directory[name]))
 end
 
 doc.nameToAddress = "function(name:string):string -- Gets the address of a computer with given name."
@@ -229,6 +238,9 @@ function gLn.init(name, port)
     modem.setWakeMessage("WakeUp_" .. private.computername)
     private.eventListener = event.register("modem_message", private.onMessage, math.huge)
     private.stateTimer = event.timer(5, private.onStateTimer, math.huge)
+    private.stateSubscription = state.subscribe(function(new, old)
+      private.stateChanged = true
+    end)
     
     gLn.discover()
   end
@@ -257,6 +269,10 @@ function gLn.destroy()
     
     if private.stateTimer ~= nil and type(private.stateTimer) == "number" then
       event.cancel(private.stateTimer)
+    end
+    
+    if private.stateSubscription ~= nil and type(private.stateSubscription) == "number" then 
+      state.unsubscribe(private.stateSubscription)
     end
     
     private.computername = nil
