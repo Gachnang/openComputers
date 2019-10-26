@@ -9,8 +9,8 @@ local doc = {}
 local state = nil
 --local observers = {}
 
-doc.observe = "function(fn:function(newState:any, oldState:any)):number -- Subscibe the state. Call 'unsubscibe' with returned number to unsubscibe." 
-function gLs.subscibe(fn)
+doc.subscribe = "function(fn:function(newState:any, oldState:any)):number -- Subscibe the state. Call 'unsubscibe' with returned number to unsubscibe." 
+function gLs.subscribe(fn)
 --  checkArg(1, fn, "function")
 --  observers[#observers+1] = fn
   
@@ -27,8 +27,8 @@ function gLs.subscibe(fn)
   gLs.onChange = gLs.onChange + fn
 end
 
-doc.unsubscibe = "function(id:number) -- Unsubscibes the state."
-function gLs.unsubscibe(id)
+doc.unsubscribe = "function(id:number) -- Unsubscibes the state."
+function gLs.unsubscribe(id)
   gLs.onChange = gLs.onChange - id
 end
 
