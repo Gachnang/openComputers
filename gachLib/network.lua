@@ -58,38 +58,38 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
       gLn.event.onDirectoryAdded(message.source)
     end
     
-    if message.code = "di" and message.target ~= nil and message.target == "BROADCAST" then 
+    if message.code == "di" and message.target ~= nil and message.target == "BROADCAST" then 
     -- discovery
       modem.send(
         message.address, 
         private.port, 
         private.createPackage("dia", message.source.name, message.source.address))
-    elseif message.code = "ping" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
+    elseif message.code == "ping" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
     -- ping
       modem.send(
         message.source.address, 
         private.port, 
         private.createPackage("pong", message.source.name, message.source.address))
-    elseif message.code = "pong" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
+    elseif message.code == "pong" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
     -- pong
       gLn.event.onPong(message.source)      
-    elseif message.code = "gs" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
+    elseif message.code == "gs" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
     -- getState
       modem.send(
         message.source.address, 
         private.port, 
         private.createPackage("gsa", message.source.name, message.source.address, state.getState())
-    elseif message.code = "gsa" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
+    elseif message.code == "gsa" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
     -- getState answer
       gLn.event.onGetStateAnswer({source = message.source, state = message.data}) 
-    elseif message.code = "ss" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
+    elseif message.code == "ss" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
     -- state subscibe
       private.stateSubsciber[message.source.name] = true
       modem.send(
         message.source.address, 
         private.port, 
         private.createPackage("gsa", message.source.name, message.source.address, state.getState())
-    elseif message.code = "sus" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
+    elseif message.code == "sus" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
     -- state unsubscibe
       private.stateSubsciber[message.source.name] = nil
     elseif message.code = "rm" then

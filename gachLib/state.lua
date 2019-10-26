@@ -1,5 +1,5 @@
 local serialization = require("serialization")
-local eventHandler = require("gachLib.eventHandler")
+local eventHandler = require("gachLib.type.eventHandler")
 local util = require("gachLib.util")
 
 local gLs = {
