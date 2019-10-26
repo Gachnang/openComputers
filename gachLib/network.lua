@@ -92,7 +92,7 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
     elseif message.code == "sus" and message.target ~= nil and (message.target.name == private.computername or message.target.address == modem.address) then
     -- state unsubscibe
       private.stateSubsciber[message.source.name] = nil
-    elseif message.code = "rm" then
+    elseif message.code == "rm" then
     -- computer stoped
       gLn.directory[message.source.name] = nil
       gLn.event.onDirectoryRemoved(message.source)
