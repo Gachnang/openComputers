@@ -162,10 +162,9 @@ function gLn.init(name, port)
     checkArg(1, name, "string")
     private.computername = name
   
-    if type(port) ~= "number" then
-        port = 1
+    if port ~= nil and type(port) == "number" then
+      private.port = port
     end  
-    private.port = port
     
     modem.open(private.port)
     modem.setWakeMessage("WakeUp_" .. private.computername)
