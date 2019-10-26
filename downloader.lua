@@ -4,6 +4,7 @@ local fs = require("filesystem")
 local event = require("event")
 local gpu = component.gpu
 local internet = component.internet
+local shell = require("shell")
 
 local branch = "master"
 local urlBase = "https://raw.githubusercontent.com/Gachnang/openComputers/" .. branch .. "/"
@@ -27,6 +28,10 @@ local files = {
   --}
 }
 
+for i = 1, #files do
+  files[i].path = fs.concat(shell.getWorkingDirectory(), files[i].path)
+end
+
 -------------------------
 -- This part is stolen from https://github.com/IgorTimofeev -> https://pastebin.com/ryhyXUKZ
 -------------------------
@@ -42,12 +47,12 @@ local properties = {
 	-- Customize localization as you want to
 	localization = {
 		-- Specify title of your installer
-		title = "Installer",
+		title = "Downloader",
 		-- Use <currentProgress>, <totalProgress> and <currentFile> text insertions to automatically display their values
 		currentFile = "Downloading \"<currentFile>\"",
 		totalProgress = "Total progress: <totalProgress>%",
 		-- Comment this lines to automatically close installer window
-		finished1 = "Successfully installed",
+		finished1 = "Successfully downloaded",
 		finished2 = "Press any key to quit"
 	},
 	-- Customize color scheme as you want to
