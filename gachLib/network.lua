@@ -15,6 +15,7 @@ local gLn = {
   directory = {
     -- name = address
   },
+  --DEBUG
   debug = {}
 }
 local doc = {
@@ -63,6 +64,7 @@ end
 
 function private.onMessage(eventName, receiverAddress, senderAddress, port, distance, message)
   message = serialization.unserialize(message)
+  -- DEBUG
   gLn.debug[#gLn.debug + 1] = message
   local messageCheck = private.messageCheck(message)
   
@@ -113,6 +115,10 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
       elseif message.code == "sus" then
       -- state unsubscibe
         private.stateSubsciber[message.source.name] = nil
+      else
+      -- DEBUG
+        print("unknewn message:")
+        print(serialization.serialize(message))
       end
     end
   end 
@@ -155,8 +161,26 @@ function gLn.discover()
   return false
 end
 
+function gLn.getState(name, callback)
+  checkArg(1, name, "string")
+  checkArg(2, callback, "function")
+  
+  local i = gLn.event.onGetStateAnswer:add(function(stateAnswer)
+    if stateAnswer.source.name == name then
+      gLn.event.onGetStateAnswer:remove(i)
+      callback(stateAnswer.state)
+    end
+  end)
+  
+  modem.send(
+    gLn.directory[name], 
+    private.port, 
+    private.createPackage("gs", name, gLn.directory[name], state.getState()))
+end
+
 doc.subscibeState = "function(name:string):boolean -- Subscribes the state of a computer with given name. Gets state on 'event.onGetStateAnswer'."
 function gLn.subscibeState(name)
+  checkArg(1, name, "string")
   return modem.send(
     gLn.directory[name], 
     private.port, 
@@ -165,6 +189,7 @@ end
 
 doc.unsubscibeState = "function(name:string):boolean -- Unsubscribes the state of a computer with given name."
 function gLn.unsubscibeState(name)
+  checkArg(1, name, "string")
   return modem.send(
     gLn.directory[name], 
     private.port, 
