@@ -178,8 +178,8 @@ function gLn.getState(name, callback)
     private.createPackage("gs", name, gLn.directory[name], state.getState()))
 end
 
-doc.subscibeState = "function(name:string[, func:function]):boolean -- Subscribes the state of a computer with given name. Gets state on 'event.onGetStateAnswer' or pass it as parameter func."
-function gLn.subscibeState(name, func)
+doc.subscribeState = "function(name:string[, func:function]):boolean -- Subscribes the state of a computer with given name. Gets state on 'event.onGetStateAnswer' or pass it as parameter func."
+function gLn.subscribeState(name, func)
   checkArg(1, name, "string")
   
   if func ~= nil and type(func) == "function" then
@@ -196,8 +196,8 @@ function gLn.subscibeState(name, func)
     private.createPackage("ss", name, gLn.directory[name]))
 end
 
-doc.unsubscibeState = "function(name:string):boolean -- Unsubscribes the state of a computer with given name."
-function gLn.unsubscibeState(name)
+doc.unsubscribeState = "function(name:string):boolean -- Unsubscribes the state of a computer with given name."
+function gLn.unsubscribeState(name)
   checkArg(1, name, "string")
   return modem.send(
     gLn.directory[name], 
