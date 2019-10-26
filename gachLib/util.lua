@@ -23,4 +23,30 @@ function util.deepcopy(orig, copies)
     return copy
 end
 
+function util.tableCount(table)
+  local i = 0
+  for _,_ in pairs(table) do
+    i = i + 1
+  end
+  return i
+end
+
+function util.tableKeys(table)
+  local keys = {}
+  for key,_ in pairs(table) do
+    keys[#keys + 1] = key
+  end
+  
+  return keys
+end
+
+function util.tableValues(table)
+  local values = {}
+  for _,value in pairs(table) do
+    values[#values + 1] = value
+  end
+  
+  return values
+end
+
 return util, doc

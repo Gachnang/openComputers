@@ -6,11 +6,11 @@ local gL = {
   util = require("gachLib.util")
 }
 
-if component.isAvailabel("transposer") then
+if gL.util.tableCount(component.list("transposer")) > 0  then
   gL.transposer = require("gachLib.transposer")
 end
 
-if component.isAvailabel("modem") then
+if gL.util.tableCount(component.list("modem")) > 0 then
   gL.network = require("gachLib.network")  
 end
 
