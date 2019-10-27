@@ -28,7 +28,7 @@ local files = {
   --controller
     { url = urlBase .. "controller/controller.lua", path = "./controller/controller.lua"},
   -- GUI-installer -> https://github.com/IgorTimofeev/GUI#installation
-    { url = "https://pastebin.com/raw/ryhyXUKZ", path = "./guiInstaller.lua"}
+    { url = "http://pastebin.com/raw.php?i=ryhyXUKZ", path = "./guiInstaller.lua"}
 }
 
 for i = 1, #files do
