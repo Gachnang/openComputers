@@ -10,7 +10,7 @@ local branch = "master"
 local urlBase = "https://raw.githubusercontent.com/Gachnang/openComputers/" .. branch .. "/"
 
 local files = {
-  --gachLib = {
+  --gachLib
     { url = urlBase .. "gachLib/doc.lua", path = "./gachLib/doc.lua"},
     { url = urlBase .. "gachLib/init.lua", path = "./gachLib/init.lua"},
     { url = urlBase .. "gachLib/network.lua", path = "./gachLib/network.lua"},
@@ -18,15 +18,17 @@ local files = {
     { url = urlBase .. "gachLib/transposer.lua", path = "./gachLib/transposer.lua"},
     { url = urlBase .. "gachLib/util.lua", path = "./gachLib/util.lua"},
     { url = urlBase .. "gachLib/type/init.lua", path = "./gachLib/type/init.lua"},
-    { url = urlBase .. "gachLib/type/eventHandler.lua", path = "./gachLib/type/eventHandler.lua"}
-  ,--},
-  --woot = {
-    { url = urlBase .. "woot/woot.lua", path = "./woot.lua"}
-  ,--},
-  --draconicInjection = {
-    { url = urlBase .. "draconicInjection/draconic.lua", path = "./draconic.lua"},
-    { url = urlBase .. "draconicInjection/draconicRec.lua", path = "./draconicRec.lua"}
-  --}
+    { url = urlBase .. "gachLib/type/eventHandler.lua", path = "./gachLib/type/eventHandler.lua"},
+  --woot
+    { url = urlBase .. "woot/woot.lua", path = "./woot/woot.lua"},
+    { url = urlBase .. "woot/wootTable.lua", path = "./wootTable.lua"},
+  --draconicInjection
+    { url = urlBase .. "draconicInjection/draconic.lua", path = "./draconic/draconic.lua"},
+    { url = urlBase .. "draconicInjection/draconicRec.lua", path = "./draconic/draconicRec.lua"},
+  --controller
+    { url = urlBase .. "controller/controller.lua", path = "./controller/controller.lua"},
+  -- GUI-installer -> https://github.com/IgorTimofeev/GUI#installation
+    { url = "https://pastebin.com/raw/ryhyXUKZ", path = "./guiInstaller.lua"}
 }
 
 for i = 1, #files do

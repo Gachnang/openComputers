@@ -14,11 +14,20 @@ return function()
     return self.i
   end
     
-  function event:remove(id)
+  function event:remove(idOrFunc)
     checkArg(1, self, "table")
-    checkArg(2, id, "number")
-  
-    self.handlers[id] = nil
+    
+    if type(idOrFunc) == "number" then
+      self.handlers[idOrFunc] = nil
+    elseif type(idOrFunc) == "function" then
+      for key,value in pairs(self.handlers) do
+        if value == idOrFunc then
+          self.handlers[key] = nil
+        end
+      end
+    else
+      error("bad argument #2 (number or function expected, got " .. type(idOrFunc) .. ")")
+    end
   end
     
   function event:trigger(...)  
