@@ -49,10 +49,10 @@ function gLt.transferAll(proxy, sideSource, sideSink)
       proxy.transferItem(sideSource, sideSink, proxy.getSlotStackSize(sideSource, sourcePos), sourcePos, sinkPos)
       count = count + 1
       -- recalc sinkPos
-      sinkPos = nextEmptySlot(proxy, sideSink, sinkPos)
+      sinkPos = gLt.nextEmptySlot(proxy, sideSink, sinkPos)
       if sinkPos == -1 then
         --reached end
-        sinkPos = nextEmptySlot(proxy, sideSink)
+        sinkPos = gLt.nextEmptySlot(proxy, sideSink)
         if sinkPos == -1 then
           --Sink is full
           break
