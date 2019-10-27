@@ -28,7 +28,7 @@ local files = {
   --controller
     { url = urlBase .. "controller/controller.lua", path = "./controller/controller.lua"},
   -- GUI-installer -> https://github.com/IgorTimofeev/GUI#installation
-    { url = "http://pastebin.com/raw.php?i=ryhyXUKZ", path = "./guiInstaller.lua"}
+    { pastebin = "ryhyXUKZ", path = "./guiInstaller.lua"}
 }
 
 for i = 1, #files do
@@ -198,6 +198,36 @@ local function download(url, path, totalProgress)
 	end
 end
 
+function downloadPastebin(url, path, totalProgress)
+  fs.makeDirectory(fs.path(path))
+  
+  local f, reason = io.open(path, "w")
+  if f then
+    local url = "http://pastebin.com/raw.php?i=" .. pasteId
+    local result, response = pcall(internet.request, url)
+    if result then
+      local y = properties.windowY + 2
+	  progressBar(y, 0, properties.localization.currentFile, totalProgress, "0", path)
+      
+      local currentLength = 1
+      for chunk in response do
+        local percent = currentLength / #response
+		progressBar(y, percent, properties.localization.currentFile, totalProgress, tostring(math.ceil(percent)), path)
+        currentLength = currentLength + 1
+        
+        string.gsub(chunk, "\r\n", "\n")
+        f:write(chunk)
+      end
+
+      f:close()
+    else
+      f:close()
+      fs.remove(filename)
+      error("HTTP request failed: " .. response .. "\n")
+    end
+  end
+end
+
 ---------------------------------------------------------------------------------------------------------------------------------
 
 -- Copying current screen data
@@ -238,7 +268,11 @@ progressBar(y, 0, properties.localization.totalProgress, "0", "0", files[1].path
 for i = 1, #files do
 	local percent = i / #files
 	local totalProgress = tostring(math.ceil(percent * 100))
-	download(files[i].url, files[i].path, totalProgress)
+    if files[i].url ~= nil then
+	  download(files[i].url, files[i].path, totalProgress)
+    elseif files[i].pastebin ~= nil
+      downloadPastebin(files[i].pastebin, files[i].path, totalProgress)
+    end
 	progressBar(y, percent, properties.localization.totalProgress, totalProgress, "0", files[i].path)
 end
 
