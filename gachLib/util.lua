@@ -12,9 +12,9 @@ function util.deepcopy(orig, copies)
         else
             copy = {}
             copies[orig] = copy
-            setmetatable(copy, deepcopy(getmetatable(orig), copies))
+            setmetatable(copy, util.deepcopy(getmetatable(orig), copies))
             for orig_key, orig_value in next, orig, nil do
-                copy[deepcopy(orig_key, copies)] = deepcopy(orig_value, copies)
+                copy[util.deepcopy(orig_key, copies)] = util.deepcopy(orig_value, copies)
             end
         end
     else -- number, string, boolean, etc
