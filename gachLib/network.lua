@@ -29,7 +29,10 @@ local private = {
   stateTimer = nil,
   stateSubscription = nil,
   stateChanged = false,
-  stateSubsciber = {}
+  stateSubsciber = {},
+  pingWaiter = {
+    -- [onPongId] = { waiter = 2, callbcack = func}
+  }
 }
 
 function private.createPackage(code, targetName, targetAddress, data)
@@ -84,6 +87,7 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
     elseif message.code == "rm" then
     -- computer stoped
       gLn.directory[message.source.name] = nil
+      private.stateSubsciber[message.source.name] = nil
       gLn.event.onDirectoryRemoved:trigger(message.source)
     end
     
@@ -112,16 +116,13 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
       elseif message.code == "sus" then
       -- state unsubscibe
         private.stateSubsciber[message.source.name] = nil
-      else
-      -- DEBUG
-        print("unknewn message:")
-        print(serialization.serialize(message))
       end
     end
   end 
 end
 
-function private.onStateTimer()
+function private.onTimer()
+  -- State
   if private.stateChanged then
     for desName,_ in pairs(private.stateSubsciber) do
       local desAddress = gLn.nameToAddress(desName)
@@ -131,6 +132,15 @@ function private.onStateTimer()
         private.createPackage("gsa", desName, desAddress, state.getState()))
     end
     private.stateChanged = false
+  end
+  -- Ping
+  for onPongId,value in pairs(private.pingWaiter) do
+    value.waiter = value.waiter - 1
+    if value.waiter <= 0 then
+      value.callback(false)
+      gLn.event.onPong:remove(onPongId)
+      private.pingWaiter[onPongId] = nil
+    end
   end
 end
 
@@ -205,6 +215,22 @@ function gLn.unsubscribeState(name)
     private.createPackage("sus", name, gLn.directory[name]))
 end
 
+function gLn.ping(name, callback)
+  checkArg(1, name, "string")
+  checkArg(2, callback, "function")
+  
+  if func ~= nil and type(func) == "function" then
+    local onPongId = gLn.event.onPong:add(function(message)
+      if message.source.name == name then
+        callback(true)
+        gLn.event.onPong:remove(onPongId)
+        private.pingWaiter[onPongId] = nil
+      end
+    end)
+    private.pingWaiter[onPongId] = {waiter = 2, callback = callback}
+  end
+end
+
 doc.nameToAddress = "function(name:string):string -- Gets the address of a computer with given name."
 function gLn.nameToAddress(name)
   checkArg(1, name, "string")
@@ -237,7 +263,7 @@ function gLn.init(name, port)
     modem.open(private.port)
     modem.setWakeMessage("WakeUp_" .. private.computername)
     private.eventListener = event.listen("modem_message", private.onMessage)
-    private.stateTimer = event.timer(5, private.onStateTimer, math.huge)
+    private.timer = event.timer(5, private.onTimer, math.huge)
     private.stateSubscription = state.subscribe(function(new, old)
       private.stateChanged = true
     end)
@@ -267,8 +293,8 @@ function gLn.destroy()
       event.cancel(private.eventListener)
     end
     
-    if private.stateTimer ~= nil and type(private.stateTimer) == "number" then
-      event.cancel(private.stateTimer)
+    if private.timer ~= nil and type(private.timer) == "number" then
+      event.cancel(private.timer)
     end
     
     if private.stateSubscription ~= nil and type(private.stateSubscription) == "number" then 
