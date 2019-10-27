@@ -198,7 +198,7 @@ local function download(url, path, totalProgress)
 	end
 end
 
-function downloadPastebin(url, path, totalProgress)
+function downloadPastebin(pasteId, path, totalProgress)
   fs.makeDirectory(fs.path(path))
   
   local f, reason = io.open(path, "w")
