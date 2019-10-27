@@ -115,7 +115,7 @@ function gLt.countByName(proxy, side, name, pos)
   return ret
 end
 
-function gLt.countByLabel(proxy, side, name, label, pos)
+function gLt.countByLabel(proxy, side, label, pos)
   local t = proxy.getAllStacks(side)
   local count = t.count()
   local ret = 0
@@ -125,14 +125,8 @@ function gLt.countByLabel(proxy, side, name, label, pos)
   end
   
   for pos=pos,count,1 do
-    if name ~= nil then
-      if t[pos].name == name then
-        ret = ret + proxy.getSlotStackSize(side, pos)
-      end
-    else
-      if t[pos].label == label then
-        ret = ret + proxy.getSlotStackSize(side, pos)
-      end
+    if t[pos].label == label then
+      ret = ret + proxy.getSlotStackSize(side, pos)
     end
   end
    
