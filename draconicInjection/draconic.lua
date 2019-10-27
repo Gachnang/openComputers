@@ -112,8 +112,8 @@ function moveInput()
     print(serialization.serialize(recepie))
     if recepie.recIndex > 0 then
       g.state.setState({state = "crafting", recepie = rec[recepie.recIndex].name})
-      moveToCore(recepie.coreSlot, recIndex)
-      moveToInjection(recIndex)
+      moveToCore(recepie.coreSlot, recepie.recIndex)
+      moveToInjection(recepie.recIndex)
       retry = false
     else
       print("No recepie found.. Retry")
