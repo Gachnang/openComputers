@@ -21,7 +21,7 @@ local files = {
     { url = urlBase .. "gachLib/type/eventHandler.lua", path = "./gachLib/type/eventHandler.lua"},
   --woot
     { url = urlBase .. "woot/woot.lua", path = "./woot/woot.lua"},
-    { url = urlBase .. "woot/wootTable.lua", path = "./wootTable.lua"},
+    { url = urlBase .. "woot/wootTable.lua", path = "./woot/wootTable.lua"},
   --draconicInjection
     { url = urlBase .. "draconicInjection/draconic.lua", path = "./draconic/draconic.lua"},
     { url = urlBase .. "draconicInjection/draconicRec.lua", path = "./draconic/draconicRec.lua"},

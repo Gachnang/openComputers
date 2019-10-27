@@ -91,7 +91,13 @@ function updateFactoryTable()
     local posI = 1
     
     while factoryTable[posF].items[posI] ~= nil do
-      factoryTable[posF].items[posI].currentCount = count(transposerDrawer, transposerDrawerSide, factoryTable[posF].items[posI].name, factoryTable[posF].items[posI].label)
+      factoryTable[posF].items[posI].currentCount = 0
+      if factoryTable[posF].items[posI].name ~= nil then
+        factoryTable[posF].items[posI].currentCount = g.transposer.countByName(transposerDrawer, transposerDrawerSide, factoryTable[posF].items[posI].name)
+      else
+        factoryTable[posF].items[posI].currentCount = g.transposer.countByLabel(transposerDrawer, transposerDrawerSide, factoryTable[posF].items[posI].label)
+      end
+      
       factoryTable[posF].items[posI].differentCount = factoryTable[posF].items[posI].targetCount - factoryTable[posF].items[posI].currentCount
       
       if factoryTable[posF].items[posI].name ~= nil then

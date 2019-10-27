@@ -37,7 +37,7 @@ function gLt.transferAll(proxy, sideSource, sideSink)
   local sourcePos = 1
   local sourceTable = proxy.getAllStacks(sideSource)
   local sourceCount = sourceTable.count()
-  local sinkPos = nextEmptySlot(proxy, sideSink)
+  local sinkPos = gLt.nextEmptySlot(proxy, sideSink)
   local sinkCount = proxy.getAllStacks(sideSink).count()
   
   if sinkPos == -1 then
