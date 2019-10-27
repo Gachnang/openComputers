@@ -55,7 +55,7 @@ end
 -- tell refinedStorage to start next crafting and wait for new input   O(N^3)
 function startNewCrafting()
   print("startNewCrafting")
-  g.state.setState({state = "ready", rec = "<none>"})
+  g.state.setState({state = "ready", recepie = "<none>"})
   while chestIsEmpty(transSideInput) do
     component.redstone.setOutput(redSideNewCrafting, 15)
     os.sleep(.1)
@@ -104,17 +104,21 @@ end
 
 -- move input to the rigth chests
 function moveInput()
-  print("moveInput")
-  local recepie = getRecepie()
-  print(serialization.serialize(recepie))
-  if recepie.recIndex > 0 then
-    g.state.setState({state = "crafting", rec = rec[recepie.recIndex].name})
-    moveToCore(recepie.coreSlot, recIndex)
-    moveToInjection(recIndex)
-  else
-    print("No recepie found.. Retry")
-    os.sleep(1)
-    moveInput()
+  local retry = true
+  
+  while retry do
+    print("moveInput")
+    local recepie = getRecepie()
+    print(serialization.serialize(recepie))
+    if recepie.recIndex > 0 then
+      g.state.setState({state = "crafting", recepie = rec[recepie.recIndex].name})
+      moveToCore(recepie.coreSlot, recIndex)
+      moveToInjection(recIndex)
+      retry = false
+    else
+      print("No recepie found.. Retry")
+      os.sleep(1)
+    end
   end
 end
 
