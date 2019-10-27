@@ -2,6 +2,7 @@ component = require("component")
 computer = require("computer")
 serialization = require("serialization")
 sides = require("sides")
+g = require("gachLib")
 
 local rec = require("draconicRec")
 
@@ -54,6 +55,7 @@ end
 -- tell refinedStorage to start next crafting and wait for new input   O(N^3)
 function startNewCrafting()
   print("startNewCrafting")
+  g.state.setState({state = "ready", rec = "<none>"})
   while chestIsEmpty(transSideInput) do
     component.redstone.setOutput(redSideNewCrafting, 15)
     os.sleep(.1)
@@ -70,7 +72,7 @@ function getRecepie()
     -- check item for core
     print(" check for core " .. i)
     for k=1,#ret.items,1 do
-      if rec[i].core.name == ret.items[k].name and rec[i].core.count == ret.items[k].count then
+      if rec[i].core.name == ret.items[k].name and rec[i].core.count >= ret.items[k].count then
         print("  item for core found: " .. ret.items[k].name .. " in slot " .. ret.items[k].slot)
         coreSlot = ret.items[k].slot
         break
@@ -83,7 +85,7 @@ function getRecepie()
       for j=1,#rec[i].inject do
         print(" check for inject " .. j .. "/" .. #rec[i].inject)
         for k=1,#ret.items,1 do
-          if rec[i].inject[j].name == ret.items[k].name and rec[i].inject[j].count == ret.items[k].count then
+          if rec[i].inject[j].name == ret.items[k].name and rec[i].inject[j].count >= ret.items[k].count then
             print("  item for inject found: " .. ret.items[k].name .. " in slot " .. ret.items[k].slot)
             checked = checked + 1
             break
@@ -106,8 +108,9 @@ function moveInput()
   local recepie = getRecepie()
   print(serialization.serialize(recepie))
   if recepie.recIndex > 0 then
-    moveToCore(recepie.coreSlot)
-    moveToInjection()
+    g.state.setState({state = "crafting", rec = rec[recepie.recIndex].name})
+    moveToCore(recepie.coreSlot, recIndex)
+    moveToInjection(recIndex)
   else
     print("No recepie found.. Retry")
     os.sleep(1)
@@ -116,21 +119,26 @@ function moveInput()
 end
 
 -- move item from input in slot to core
-function moveToCore(slot)
+function moveToCore(slot, recIndex)
   print("move to core " .. slot)
-  component.transposer.transferItem(transSideInput, transSideCore, component.transposer.getStackInSlot(transSideInput, slot).size, slot)
+  component.transposer.transferItem(transSideInput, transSideCore, rec[recIndex].core.count, slot)
 end
 
 -- move all items from input to injection
-function moveToInjection()
+function moveToInjection(recIndex)
   for i=1,component.transposer.getInventorySize(transSideInput),1 do
     local stack = component.transposer.getStackInSlot(transSideInput,i)
     if stack ~= nil and stack.name ~= "minecraft:air" then
-      component.transposer.transferItem(
-        transSideInput, 
-        transSideInject, 
-        stack.size,
-        i,i)
+      for j=1,#rec[recIndex].inject do
+        if stack.name == rec[recIndex].inject[j].name then
+          component.transposer.transferItem(
+            transSideInput, 
+            transSideInject, 
+            rec[recIndex].inject[j].count,
+            i,
+            g.transposer.nextEmptySlot(component.transposer, transSideInject))
+        end
+      end
     end
   end
 end
@@ -164,6 +172,11 @@ function returnResult()
 end
 
 -- main
+if g.network ~= nil then
+    g.network.init("woot")
+end
+g.state.setState({state = "init"})
+
 while true do
   startNewCrafting()
   moveInput()
