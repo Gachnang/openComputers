@@ -270,7 +270,7 @@ for i = 1, #files do
 	local totalProgress = tostring(math.ceil(percent * 100))
     if files[i].url ~= nil then
 	  download(files[i].url, files[i].path, totalProgress)
-    elseif files[i].pastebin ~= nil
+    elseif files[i].pastebin ~= nil then
       downloadPastebin(files[i].pastebin, files[i].path, totalProgress)
     end
 	progressBar(y, percent, properties.localization.totalProgress, totalProgress, "0", files[i].path)
