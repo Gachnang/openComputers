@@ -208,9 +208,9 @@ return {
     dbPos = 24,
     items = {
       {label = "Raw Fish", targetCount = base},
-      {label = "Raw Salmon", targetCount = base},
-      {label = "Pufferfish", targetCount = base},
-      {label = "Clownfish", targetCount = base},
+      --{label = "Raw Salmon", targetCount = base},
+      --{label = "Pufferfish", targetCount = base},
+      --{label = "Clownfish", targetCount = base},
       {name = "minecraft:prismarine_shard", targetCount = base},
       {name = "minecraft:prismarine_crystals", targetCount = base},
       {label = "item.mob_ingredient_16.name", targetCount = base} -- Guardian Spike

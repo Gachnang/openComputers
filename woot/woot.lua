@@ -48,7 +48,7 @@ function breakFactory(time)
 
   while g.transposer.isEmpty(transposerBPC,transposerBreakerSide) and time > 0 do
     time = time - 1
-    os.sleep(0.1)
+    os.sleep(0.5)
   end
 
   redstoneBreaker.setOutput(redstoneBreakerSide, 15)
@@ -72,7 +72,7 @@ function placeFactory(dbSlot, time)
 
   while not g.transposer.isEmpty(transposerBPC,transposerPlacerSide) and time > 0 do
     time = time - 1
-    os.sleep(0.1)
+    os.sleep(0.5)
   end
 
   redstonePlacer.setOutput(redstonePlacerSide, 15)
