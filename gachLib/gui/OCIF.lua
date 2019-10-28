@@ -3,7 +3,7 @@ local args = {...}
 local image = args[1]
 
 local bit32 = require("bit32")
-require("advancedLua")
+require("gachLib.advancedLua")
 local unicode = require("unicode")
 local fs = require("filesystem")
 local color = require("color")
