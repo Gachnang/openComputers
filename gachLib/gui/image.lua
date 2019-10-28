@@ -122,17 +122,7 @@ end
 -------------------------------------------------------------------------------
 
 function image.loadFormatModule(path, extension)
-	local success, result = loadfile(path)
-	if success then
-		success, result = pcall(success, image)
-		if success then
-			image.formatModules[extension] = result
-		else
-			error("Failed to execute image format module: " .. tostring(result))
-		end
-	else
-		error("Failed to load image format module: " .. tostring(result))
-	end
+	image.formatModules[extension] = require(path)
 end
 
 local function loadOrSave(methodName, path, ...)
@@ -351,7 +341,7 @@ end
 
 -------------------------------------------------------------------------------
 
-image.loadFormatModule("/lib/FormatModules/OCIF.lua", ".pic")
+image.loadFormatModule("gachLib.gui.OCIF", ".pic")
 
 -------------------------------------------------------------------------------
 
