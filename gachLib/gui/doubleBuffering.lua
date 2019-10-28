@@ -2,7 +2,7 @@
 local component = require("component")
 local unicode = require("unicode")
 local color = require("gachLib.gui.color")
-local image = require("image")
+local image = require("gachLib.gui.image")
 
 --------------------------------------------------------------------------------
 
