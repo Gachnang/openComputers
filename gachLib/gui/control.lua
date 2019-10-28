@@ -38,37 +38,6 @@ local function getTopParent(control)
 end
 
 return function(x, y, width, height)
-    local draw = setmetatable({
-        draw = controlDraw,
-        drawBackground = controlDrawBackground
-    },{
-        __call = function(control, delta)
-            self.draw.draw(control, delta)
-            return self
-        end
-    })
-
-    local event = setmetatable({
-        event = eventHandler,
-        -- Screen
-        screen_resized = nil,   -- screenAddress: string, newWidth: number, newHeight: number
-        touch = nil,            -- screenAddress: string, x: number, y: number, button: number, playerName: string
-        drag = nil,             -- screenAddress: string, x: number, y: number, button: number, playerName: string
-        drop = nil,             -- screenAddress: string, x: number, y: number, button: number, playerName: string
-        scroll = nil,           -- screenAddress: string, x: number, y: number, direction: number, playerName: string
-        walk = nil,             -- screenAddress: string, x: number, y: number[, playerName: string]
-        -- Keyboard
-        key_down = nil,         -- keyboardAddress: string, char: number, code: number, playerName: string
-        key_up = nil,           -- keyboardAddress: string, char: number, code: number, playerName: string
-        clipboard = nil         -- keyboardAddress: string, value: string, playerName: string
-        
-    },{
-        __call = function(control, eventData)
-            self.event.event(control, eventData)
-            return self
-        end
-    })   
-
 	local control = {
         type = "control",
         -- x = absolute position -> can be changed by parent (container)
@@ -89,14 +58,42 @@ return function(x, y, width, height)
         
         color = {
           background = nil
-        },
-        
-        event = event,
-        draw = draw
+        }
 	}
     control.__index = control
-    event.__index = control
-    draw.__index = control
+    
+    control.draw = setmetatable({
+        draw = controlDraw,
+        drawBackground = controlDrawBackground
+    },{
+        __call = function(delta)
+            self.draw.draw(control, delta)
+            return self
+        end
+    })
+    control.draw.__index = control
+    
+    control.event = setmetatable({
+        event = eventHandler,
+        -- Screen
+        screen_resized = nil,   -- screenAddress: string, newWidth: number, newHeight: number
+        touch = nil,            -- screenAddress: string, x: number, y: number, button: number, playerName: string
+        drag = nil,             -- screenAddress: string, x: number, y: number, button: number, playerName: string
+        drop = nil,             -- screenAddress: string, x: number, y: number, button: number, playerName: string
+        scroll = nil,           -- screenAddress: string, x: number, y: number, direction: number, playerName: string
+        walk = nil,             -- screenAddress: string, x: number, y: number[, playerName: string]
+        -- Keyboard
+        key_down = nil,         -- keyboardAddress: string, char: number, code: number, playerName: string
+        key_up = nil,           -- keyboardAddress: string, char: number, code: number, playerName: string
+        clipboard = nil         -- keyboardAddress: string, value: string, playerName: string
+        
+    },{
+        __call = function(eventData)
+            self.event.event(control, eventData)
+            return self
+        end
+    })   
+    control.event.__index = control
     
     return control
 end
