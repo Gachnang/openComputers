@@ -29,7 +29,7 @@ local files = {
     { url = urlBase .. "gachLib/gui/control.lua", path = "./gachLib/gui/control.lua"},
     { url = urlBase .. "gachLib/gui/image.lua", path = "./gachLib/gui/image.lua"},
     { url = urlBase .. "gachLib/gui/OCIF.lua", path = "./gachLib/gui/OCIF.lua"},
-    { url = urlBase .. "gachLib/gui/doubleBuffering.lua", path = "./gachLib/gui/doubleBuffering.lua"},
+    { url = urlBase .. "gachLib/gui/doubleBuffer.lua", path = "./gachLib/gui/doubleBuffer.lua"},
     { url = urlBase .. "gachLib/gui/label.lua", path = "./gachLib/gui/label.lua"},
   --woot
     { url = urlBase .. "woot/woot.lua", path = "./woot/woot.lua"},
