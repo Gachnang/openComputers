@@ -6,7 +6,7 @@ local bit32 = require("bit32")
 require("gachLib.advancedLua")
 local unicode = require("unicode")
 local fs = require("filesystem")
-local color = require("color")
+local color = require("gachLib.gui.color")
 
 --------------------------------------------------------------------------------
 
