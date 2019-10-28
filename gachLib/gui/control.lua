@@ -67,8 +67,8 @@ return function(x, y, width, height)
         drawBackground = controlDrawBackground
     },{
         __call = function(delta)
-            self.draw.draw(control, delta)
-            return self
+            control.draw.draw(control, delta)
+            return control
         end
     })
     control.draw.__index = control
@@ -89,8 +89,8 @@ return function(x, y, width, height)
         
     },{
         __call = function(eventData)
-            self.event.event(control, eventData)
-            return self
+            control.event.event(control, eventData)
+            return control
         end
     })   
     control.event.__index = control
