@@ -85,15 +85,15 @@ local function applicationStart(appl)
     appl.event.listenerDrop = event.listen("drop", applicationEventListenerDrop(appl))
     appl.event.listenerScroll = event.listen("scroll", applicationEventListenerScroll(appl))
     
-    appl.thread = thread.create(applicationDrawThread, appl)
+    --appl.thread = thread.create(
+    applicationDrawThread(appl)
+    --thread.waitForAll({appl.thread})
     
 end
 
 local function applicationStop(appl)
     appl.running = false
-    
-    thread.waitForAll({appl.thread})
-    
+        
     event.cancel(appl.event.listenerTouch)
     event.cancel(appl.event.listenerDrag)
     event.cancel(appl.event.listenerDrop)

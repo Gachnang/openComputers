@@ -43,7 +43,7 @@ return function(x, y, width, height)
         drawBackground = controlDrawBackground
     },{
         __call = function(control, delta)
-            control.draw.draw(control, delta)
+            self.draw.draw(control, delta)
             return self
         end
     })
@@ -64,7 +64,7 @@ return function(x, y, width, height)
         
     },{
         __call = function(control, eventData)
-            control.event.event(control, eventData)
+            self.event.event(control, eventData)
             return self
         end
     })   
