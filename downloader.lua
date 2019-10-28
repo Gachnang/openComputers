@@ -17,8 +17,17 @@ local files = {
     { url = urlBase .. "gachLib/state.lua", path = "./gachLib/state.lua"},
     { url = urlBase .. "gachLib/transposer.lua", path = "./gachLib/transposer.lua"},
     { url = urlBase .. "gachLib/util.lua", path = "./gachLib/util.lua"},
+  --gachLib.type
     { url = urlBase .. "gachLib/type/init.lua", path = "./gachLib/type/init.lua"},
     { url = urlBase .. "gachLib/type/eventHandler.lua", path = "./gachLib/type/eventHandler.lua"},
+  --gachLib.gui
+    { url = urlBase .. "gachLib/gui/init.lua", path = "./gachLib/gui/init.lua"},
+    { url = urlBase .. "gachLib/gui/application.lua", path = "./gachLib/gui/application.lua"},
+    { url = urlBase .. "gachLib/gui/color.lua", path = "./gachLib/gui/color.lua"},
+    { url = urlBase .. "gachLib/gui/container.lua", path = "./gachLib/gui/container.lua"},
+    { url = urlBase .. "gachLib/gui/control.lua", path = "./gachLib/gui/control.lua"},
+    { url = urlBase .. "gachLib/gui/doubleBuffering.lua", path = "./gachLib/gui/doubleBuffering.lua"},
+    { url = urlBase .. "gachLib/gui/label.lua", path = "./gachLib/gui/label.lua"},
   --woot
     { url = urlBase .. "woot/woot.lua", path = "./woot/woot.lua"},
     { url = urlBase .. "woot/wootTable.lua", path = "./woot/wootTable.lua"},

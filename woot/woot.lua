@@ -1,6 +1,7 @@
 -- import
 sides = require("sides")
 component = require("component")
+os = require("os")
 g = require("gachLib")
 
 --config
@@ -91,26 +92,24 @@ function updateFactoryTable()
     local posI = 1
     
     while factoryTable[posF].items[posI] ~= nil do
-      factoryTable[posF].items[posI].currentCount = 0
+      factoryTable[posF].items[posI].currentCount = 0      
+      
       if factoryTable[posF].items[posI].name ~= nil then
         factoryTable[posF].items[posI].currentCount = g.transposer.countByName(transposerDrawer, transposerDrawerSide, factoryTable[posF].items[posI].name)
+        print("    " .. factoryTable[posF].items[posI].name .. ": " .. factoryTable[posF].items[posI].currentCount .. " / " .. factoryTable[posF].items[posI].targetCount)
       else
         factoryTable[posF].items[posI].currentCount = g.transposer.countByLabel(transposerDrawer, transposerDrawerSide, factoryTable[posF].items[posI].label)
+        print("    " .. factoryTable[posF].items[posI].label .. ": " .. factoryTable[posF].items[posI].currentCount .. " / " .. factoryTable[posF].items[posI].targetCount)
       end
       
       factoryTable[posF].items[posI].differentCount = factoryTable[posF].items[posI].targetCount - factoryTable[posF].items[posI].currentCount
-      
-      if factoryTable[posF].items[posI].name ~= nil then
-        print("    " .. factoryTable[posF].items[posI].name .. ": " .. factoryTable[posF].items[posI].currentCount .. " / " .. factoryTable[posF].items[posI].targetCount)
-      else
-        print("    " .. factoryTable[posF].items[posI].label .. ": " .. factoryTable[posF].items[posI].currentCount .. " / " .. factoryTable[posF].items[posI].targetCount)
-      end
       
       if factoryTable[posF].items[posI].differentCount > 0 then
         missingSum = missingSum + factoryTable[posF].items[posI].differentCount
       end
       
       posI = posI + 1
+      os.sleep(0)
     end
     local missingAVG = missingSum / (posI - 1)
     
