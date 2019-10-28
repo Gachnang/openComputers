@@ -1,7 +1,7 @@
 local control = require("gachLib.gui.control")
 local buffer = require("gachLib.gui.doubleBuffer")
 
-local getRectangleIntersection(R1X1, R1Y1, R1X2, R1Y2, R2X1, R2Y1, R2X2, R2Y2)
+local function getRectangleIntersection(R1X1, R1Y1, R1X2, R1Y2, R2X1, R2Y1, R2X2, R2Y2)
     if R2X1 <= R1X2 and R2Y1 <= R1Y2 and R2X2 >= R1X1 and R2Y2 >= R1Y1 then
         return
             math.max(R2X1, R1X1),
