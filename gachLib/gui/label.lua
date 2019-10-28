@@ -32,7 +32,7 @@ return function(x, y, width, height, text, foreground)
     label.type = label.type .. ".label"
     
 	label.text = text or "LABEL"
-    label.color.foreground = foreground or #FFFFFF
+    label.color.foreground = foreground or 0xFFFFFF
     
     label.draw.foreBackground = labelDrawForeground
     

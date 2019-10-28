@@ -10,29 +10,38 @@ local function applicationDraw(appl, delta, force)
 end
 
 local function applicationEventListenerScreen(type, screenAddress, x, y, button, playerName)
-    local eventData = {
+    return {
         type = type, 
         screenAddress = screenAddress, 
         x = x, 
         y = y, 
         button = button, 
-        playerName = playerName}
+        playerName = playerName
+    }
 end
 
-local function applicationEventListenerTouch(screenAddress, x, y, button, playerName)
-    applicationEventListenerScreen("touch", screenAddress, x, y, button, playerName)
+local function applicationEventListenerTouch(appl)
+    return function(screenAddress, x, y, button, playerName)
+        appl.event.event(appl, applicationEventListenerScreen("touch", screenAddress, x, y, button, playerName))
+    end
 end
 
-local function applicationEventListenerDrag(screenAddress, x, y, button, playerName)
-    applicationEventListenerScreen("drag", screenAddress, x, y, button, playerName)
+local function applicationEventListenerDrag(appl)
+    return function(screenAddress, x, y, button, playerName)
+        appl.event.event(appl, applicationEventListenerScreen("drag", screenAddress, x, y, button, playerName))
+    end
 end
 
-local function applicationEventListenerDrop(screenAddress, x, y, button, playerName)
-    applicationEventListenerScreen("drop", screenAddress, x, y, button, playerName)
+local function applicationEventListenerDrop(appl)
+    return function(screenAddress, x, y, button, playerName)
+        appl.event.event(appl, applicationEventListenerScreen("drop", screenAddress, x, y, button, playerName))
+    end
 end
 
-local function applicationEventListenerScroll(screenAddress, x, y, button, playerName)
-    applicationEventListenerScreen("scroll", screenAddress, x, y, button, playerName)
+local function applicationEventListenerScroll(appl)
+    return function(screenAddress, x, y, button, playerName)
+        appl.event.event(appl, applicationEventListenerScreen("scroll", screenAddress, x, y, button, playerName))
+    end
 end
 
 local function applicationDrawThread(appl)
@@ -71,10 +80,10 @@ end
 local function applicationStart(appl)
     appl.running = true
     
-    appl.event.listenerTouch = event.listen("touch", applicationEventListenerScreen)
-    appl.event.listenerDrag = event.listen("drag", applicationEventListenerDrag)
-    appl.event.listenerDrop = event.listen("drop", applicationEventListenerDrop)
-    appl.event.listenerScroll = event.listen("scroll", applicationEventListenerScroll)
+    appl.event.listenerTouch = event.listen("touch", applicationEventListenerTouch(appl))
+    appl.event.listenerDrag = event.listen("drag", applicationEventListenerDrag(appl))
+    appl.event.listenerDrop = event.listen("drop", applicationEventListenerDrop(appl))
+    appl.event.listenerScroll = event.listen("scroll", applicationEventListenerScroll(appl))
     
     appl.thread = thread.create(applicationDrawThread, appl)
     
@@ -95,15 +104,15 @@ return function()
     local appl = container(1, 1, buffer.getWidth(), buffer.getHeight())
     appl.type = appl.type .. ".application"
     
-    appl.event.listenerScreen = 0.1
+    appl.color.background = 0x202020
     
     appl.draw.drawContainer = appl.draw.draw
     appl.draw.draw = applicationDraw
     appl.draw.fps = 0
     
     appl.running = false
-    application.start = applicationStart
-	application.stop = applicationStop
+    appl.start = applicationStart
+	appl.stop = applicationStop
     
     return appl
 end

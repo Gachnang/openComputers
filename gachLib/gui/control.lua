@@ -22,7 +22,7 @@ local function controlDrawBackground(control, delta)
     return control
 end
 
-local function eventHanlder(control, eventData)
+local function eventHandler(control, eventData)
   if type(control.event[eventData.type]) == "function" then
     return control.event[eventData.type](control, eventData)
   end
@@ -49,7 +49,7 @@ return function(x, y, width, height)
     })
 
     local event = setmetatable({
-        event = eventHanlder,
+        event = eventHandler,
         -- Screen
         screen_resized = nil,   -- screenAddress: string, newWidth: number, newHeight: number
         touch = nil,            -- screenAddress: string, x: number, y: number, button: number, playerName: string
