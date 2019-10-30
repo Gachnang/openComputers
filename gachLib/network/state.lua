@@ -1,5 +1,4 @@
 local component = require("component")
-local modem = component.modem
 local event = require("event")
 local serialization = require("serialization")
 local eventHandler = require("gachLib.type.eventHandler")
@@ -15,6 +14,7 @@ local gLn = {
   directory = {
     -- [name] = address
   },
+  protocol = "gachLib.state",
   --DEBUG
   debug = {}
 }
@@ -24,7 +24,6 @@ local doc = {
 
 local private = {
   port = 1,
-  computername = nil,
   eventListener = nil,
   stateTimer = nil,
   stateSubscription = nil,
@@ -39,8 +38,8 @@ function private.createPackage(code, targetName, targetAddress, data)
   local packet = {
       code = code,
       source = {
-        name = private.computername,
-        address = modem.address
+        name = nm.computername,
+        address = gLn.nm.modemProxy.address
       },
       target = {
         name = targetName,
@@ -52,21 +51,21 @@ function private.createPackage(code, targetName, targetAddress, data)
     packet.data = data
   end
   
-  return serialization.serialize(packet)
+  return serialization.serialize({gLn.protocol, packet})
 end
 
 function private.messageCheck(message)
   local ret = 0
   if message ~= nil and message.source ~= nil and message.target ~= nil then
     ret = 1
-    if message.target.name == "BROADCAST" or message.target.name == private.computername or message.target.address == modem.address then
+    if message.target.name == "BROADCAST" or message.target.name == nm.computername or message.target.address == gLn.nm.modemProxy.address then
       ret = 2
     end
   end
   return ret
 end
 
-function private.onMessage(eventName, receiverAddress, senderAddress, port, distance, message)
+function private.onModemMessage(eventName, receiverAddress, senderAddress, port, distance, protocol, message)
   message = serialization.unserialize(message)
   -- DEBUG
   local messageCheck = private.messageCheck(message)
@@ -80,9 +79,9 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
     
     if message.code == "di" then 
     -- discovery
-      modem.send(
-        message.source.address, 
+      gLn.nm.sendMessage(
         private.port, 
+        message.source.address, 
         private.createPackage("dia", message.source.name, message.source.address))
     elseif message.code == "rm" then
     -- computer stoped
@@ -94,18 +93,18 @@ function private.onMessage(eventName, receiverAddress, senderAddress, port, dist
     if messageCheck > 1 then
       if message.code == "ping" then
       -- ping
-        modem.send(
-          message.source.address, 
+        gLn.nm.sendMessage(
           private.port, 
+          message.source.address, 
           private.createPackage("pong", message.source.name, message.source.address))
       elseif message.code == "pong" then
       -- pong
         gLn.event.onPong:trigger(message.source)      
       elseif message.code == "gs" then
       -- getState
-        modem.send(
-          message.source.address, 
+        gLn.nm.sendMessage(
           private.port, 
+          message.source.address, 
           private.createPackage("gsa", message.source.name, message.source.address, state.getState()))
       elseif message.code == "gsa" then
       -- getState answer
@@ -126,9 +125,9 @@ function private.onTimer()
   if private.stateChanged then
     for desName,_ in pairs(private.stateSubsciber) do
       local desAddress = gLn.nameToAddress(desName)
-      modem.send(
-        desAddress, 
+      gLn.nm.sendMessage(
         private.port, 
+        desAddress, 
         private.createPackage("gsa", desName, desAddress, state.getState()))
     end
     private.stateChanged = false
@@ -144,31 +143,9 @@ function private.onTimer()
   end
 end
 
-doc.getName = "function():boolean -- is gachLib.network inizialized?"
-function gLn.isInit()
-  return private.computername ~= nil
-end
-
-doc.getName = "function():string -- Gets the computername."
-function gLn.getName()
-  return private.computername
-end
-
 doc.getName = "function():boolean -- Discovers computers in network and fills 'directory' with the answers. Return true when sended."
 function gLn.discover()
-  if gLn.isInit() then
-    return modem.broadcast(private.port, serialization.serialize({
-      code = "di",
-      source = {
-        name = private.computername,
-        address = modem.address
-      },
-      target = {
-        name = "BROADCAST"
-      }
-    }))
-  end
-  return false
+    return gLn.nm.broadcastMessage(private.port, private.createPackage("di", "BROADCAST", "BROADCAST", state.getState()))
 end
 
 function gLn.getState(name, callback)
@@ -181,8 +158,8 @@ function gLn.getState(name, callback)
       callback(stateAnswer.state)
     end
   end)
-  
-  modem.send(
+  --------------
+  gLn.nm.sendMessage(
     gLn.directory[name], 
     private.port, 
     private.createPackage("gs", name, gLn.directory[name]))
@@ -200,16 +177,16 @@ function gLn.subscribeState(name, func)
     end)
   end
   
-  return modem.send(
-    gLn.directory[name], 
+  return gLn.nm.sendMessage(
     private.port, 
+    gLn.directory[name], 
     private.createPackage("ss", name, gLn.directory[name]))
 end
 
 doc.unsubscribeState = "function(name:string):boolean -- Unsubscribes the state of a computer with given name."
 function gLn.unsubscribeState(name)
   checkArg(1, name, "string")
-  return modem.send(
+  return gLn.nm.sendMessage(
     gLn.directory[name], 
     private.port, 
     private.createPackage("sus", name, gLn.directory[name]))
@@ -251,18 +228,9 @@ function gLn.addressToName(address)
 end
 
 doc.getName = "function(name:string[, port:number]):void -- Inits the gachLib.network."
-function gLn.init(name, port)
-  if gLn.isInit() == false then
-    checkArg(1, name, "string")
-    private.computername = name
-  
-    if port ~= nil and type(port) == "number" then
-      private.port = port
-    end  
+function gLn.init(name, port)    
+    gLn.nm.modemProxy.open(private.port)
     
-    modem.open(private.port)
-    modem.setWakeMessage("WakeUp_" .. private.computername)
-    private.eventListener = event.listen("modem_message", private.onMessage)
     private.timer = event.timer(5, private.onTimer, math.huge)
     private.stateSubscription = state.subscribe(function(new, old)
       private.stateChanged = true
@@ -274,35 +242,19 @@ end
 
 doc.getName = "function():void -- Destroys the gachLib.network like before 'init'."
 function gLn.destroy()
-  if gLn.isInit() then
-    if modem.isOpen(private.port) then
-      modem.broadcast(private.port, serialization.serialize({
-        code = "rm",
-        source = {
-          name = private.computername,
-          address = modem.address
-        },
-        target = {
-          name = "BROADCAST"
-        }
-      }))
-      modem.close(private.port)
+    if gLn.nm.modemProxy.isOpen(private.port) then
+      gLn.nm.broadcastMessage(private.port, private.createPackage("rm", "BROADCAST", "BROADCAST", state.getState()))
+      gLn.nm.modemProxy.close(private.port)
     end
-    
-    if private.eventListener ~= nil and type(private.eventListener) == "number" then
-      event.cancel(private.eventListener)
-    end
-    
+        
     if private.timer ~= nil and type(private.timer) == "number" then
       event.cancel(private.timer)
     end
     
     if private.stateSubscription ~= nil and type(private.stateSubscription) == "number" then 
       state.unsubscribe(private.stateSubscription)
-    end
-    
-    private.computername = nil    
+    end  
   end
 end
 
-return gLn, doc
+return gLn, gLn.protocol, doc

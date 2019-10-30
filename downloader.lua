@@ -13,7 +13,6 @@ local files = {
   --gachLib
     { url = urlBase .. "gachLib/doc.lua", path = "./gachLib/doc.lua"},
     { url = urlBase .. "gachLib/init.lua", path = "./gachLib/init.lua"},
-    { url = urlBase .. "gachLib/network.lua", path = "./gachLib/network.lua"},
     { url = urlBase .. "gachLib/state.lua", path = "./gachLib/state.lua"},
     { url = urlBase .. "gachLib/transposer.lua", path = "./gachLib/transposer.lua"},
     { url = urlBase .. "gachLib/util.lua", path = "./gachLib/util.lua"},
@@ -21,16 +20,10 @@ local files = {
   --gachLib.type
     { url = urlBase .. "gachLib/type/init.lua", path = "./gachLib/type/init.lua"},
     { url = urlBase .. "gachLib/type/eventHandler.lua", path = "./gachLib/type/eventHandler.lua"},
-  --gachLib.gui
-    { url = urlBase .. "gachLib/gui/init.lua", path = "./gachLib/gui/init.lua"},
-    { url = urlBase .. "gachLib/gui/application.lua", path = "./gachLib/gui/application.lua"},
-    { url = urlBase .. "gachLib/gui/color.lua", path = "./gachLib/gui/color.lua"},
-    { url = urlBase .. "gachLib/gui/container.lua", path = "./gachLib/gui/container.lua"},
-    { url = urlBase .. "gachLib/gui/control.lua", path = "./gachLib/gui/control.lua"},
-    { url = urlBase .. "gachLib/gui/image.lua", path = "./gachLib/gui/image.lua"},
-    { url = urlBase .. "gachLib/gui/OCIF.lua", path = "./gachLib/gui/OCIF.lua"},
-    { url = urlBase .. "gachLib/gui/doubleBuffer.lua", path = "./gachLib/gui/doubleBuffer.lua"},
-    { url = urlBase .. "gachLib/gui/label.lua", path = "./gachLib/gui/label.lua"},
+  --gachLib.network
+    { url = urlBase .. "gachLib/network/init.lua", path = "./gachLib/network/init.lua"},
+    { url = urlBase .. "gachLib/network/ftpServerMineOS.lua", path = "./gachLib/network/ftpServerMineOS.lua"},
+    { url = urlBase .. "gachLib/network/state.lua", path = "./gachLib/network/state.lua"},
   --woot
     { url = urlBase .. "woot/woot.lua", path = "./woot/woot.lua"},
     { url = urlBase .. "woot/wootTable.lua", path = "./woot/wootTable.lua"},
@@ -38,9 +31,9 @@ local files = {
     { url = urlBase .. "draconicInjection/draconic.lua", path = "./draconic/draconic.lua"},
     { url = urlBase .. "draconicInjection/draconicRec.lua", path = "./draconic/draconicRec.lua"},
   --controller
-    { url = urlBase .. "controller/controller.lua", path = "./controller/controller.lua"},
+    { url = urlBase .. "controller/controller.lua", path = "./controller/controller.lua"}
   -- GUI-installer -> https://github.com/IgorTimofeev/GUI#installation
-    { pastebin = "ryhyXUKZ", path = "./guiInstaller.lua"}
+    ---,{ pastebin = "ryhyXUKZ", path = "./guiInstaller.lua"}
 }
 
 for i = 1, #files do
