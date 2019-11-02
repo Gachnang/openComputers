@@ -36,7 +36,7 @@ if userSettings.terminal.version == nil or userSettings.terminal.version < versi
     end
     
     userSettings.terminal.aliases = {}
-    countLastCommands = 10
+    historyLimit = 10
     
     userSettings.terminal.version = version
     

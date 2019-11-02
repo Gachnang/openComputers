@@ -146,8 +146,7 @@ return {
       {name = "minecraft:glowstone_dust", targetCount = base},
       {name = "minecraft:glass_bottle", targetCount = base},
       {name = "minecraft:redstone", targetCount = base},
-      {name = "xreliquary:witch_hat", targetCount = base},
-      {name = "quark:witch_hat", targetCount = base}
+      {name = "xreliquary:witch_hat", targetCount = 50}
     }
   }, {
     name = "Spider",

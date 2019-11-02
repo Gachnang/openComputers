@@ -14,8 +14,4 @@ if gL.util.tableCount(component.list("modem")) > 0 then
   gL.network = require("gachLib.network")  
 end
 
-if gL.util.tableCount(component.list("gpu")) > 0 then
-  gL.gui = require("gachLib.gui")
-end 
-
 return gL
