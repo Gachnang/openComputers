@@ -80,6 +80,17 @@ function gLt.findByLabel(proxy, side, label, pos)
   return -1
 end
 
+function parseName(name)
+  local meta = nil
+  local posMeta = name:find(":")
+  if posMeta ~= nil and posMeta > 0 then
+    meta = name:sub(posMeta)
+    name = name:sub(1, posMeta - 1)
+  end
+  
+  return name, meta
+end
+
 function gLt.findByName(proxy, side, name, pos)
   local t = proxy.getAllStacks(side)
   local count = t.count()
@@ -88,9 +99,13 @@ function gLt.findByName(proxy, side, name, pos)
     pos = 1
   end
   
+  local name, meta = parseName(name)
+  
   for pos=pos,count,1 do
     if t[pos].name == name then
-      return pos
+      if meta == nil or t[pos].metadata == meta then
+        return pos
+      end
     end
   end
    
@@ -106,9 +121,13 @@ function gLt.countByName(proxy, side, name, pos)
     pos = 1
   end
   
+  local name, meta = parseName(name)
+  
   for pos=pos,count,1 do
     if t[pos].name == name then
-      ret = ret + proxy.getSlotStackSize(side, pos)
+        if meta == nil or t[pos].metadata == meta then
+            ret = ret + proxy.getSlotStackSize(side, pos)
+        end
     end
   end
    
